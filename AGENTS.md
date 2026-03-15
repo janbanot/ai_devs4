@@ -1,87 +1,110 @@
 # AI Devs 4 Project
 
 ## Overview
-This is a Python project built with `uv` as the package manager. It provides a foundation for working with large language models and building AI-powered applications.
+
+Python project built with `uv` for the AI Devs 4 course. Provides utilities for API interaction, data management, and LLM integration via DSPy.
 
 ## Project Structure
+
 ```
-ai-devs4/
-├── pyproject.toml       # Project configuration and dependencies
-├── uv.lock             # Lock file for reproducible builds
-├── .env                # Environment variables (not committed)
-├── .python-version     # Python version specification
-└── README.md           # Project documentation
+ai_devs4/
+├── src/ai_devs/           # Core package (installable)
+│   ├── __init__.py        # Public API exports
+│   ├── config.py          # Config class, configure_logging()
+│   ├── client.py          # fetch_data, submit_answer
+│   └── io.py              # save_to_file, get_data
+├── tasks/                 # Task scripts
+├── data/                  # Downloaded data (gitignored)
+├── pyproject.toml         # Project config
+└── uv.lock                # Lock file
 ```
+
+## Architecture
+
+### Configuration
+- `Config` class via `pydantic-settings` with auto-validation
+- Dependency injection: pass `config` to functions, instantiate once in `main()`
+- Fails fast if required env vars missing
+- Auto-loads `.env` file
+
+### Logging
+- Call `configure_logging()` once at script entry point
+- Format: `LEVEL name: message`
+- Default level: `DEBUG`
+
+### Package Layout
+- `src/ai_devs/` - installable package, public API exported via `__init__.py`
+- `tasks/` - executable scripts for course tasks
+- Import: `from ai_devs import Config, fetch_data, ...`
 
 ## Dependencies
 
-### Core Dependencies
-- **dspy** (v3.1.3) - Framework for composing language model calls and building AI pipelines
-- **python-dotenv** (v1.2.2) - Load environment variables from .env file
+### Core
+- **dspy** (v3.1.3) - Framework for LLM calls and AI pipelines
+- **httpx** (v0.28.1) - HTTP client for API requests
+- **pydantic-settings** (v2.13.1) - Settings management with env validation
 
-### Development Dependencies
-- **ruff** (v0.15.6) - Fast Python linter and formatter
+### Development
+- **ruff** (v0.15.6) - Linter and formatter
 
 ## Setup
 
 ### Prerequisites
 - Python 3.12+
-- `uv` package manager installed
+- `uv` package manager
 
 ### Installation
-1. Clone the repository
-2. Sync dependencies:
-   ```bash
-   uv sync
-   ```
-3. Create a `.env` file with any required API keys (e.g., MISTRAL_API_KEY, OPENAI_API_KEY)
+```bash
+uv sync
+```
+
+### Environment Variables
+Create `.env` file:
+```
+HUB_BASE_URL=https://api.example.com
+HUB_API_KEY=your_key_here
+MISTRAL_API_KEY=your_key_here  # Optional, for DSPy
+```
 
 ## Development Workflow
 
-### Format code with Ruff
+### Lint and Format
 ```bash
-.venv/bin/ruff format <file.py>
+.venv/bin/ruff check src/ tasks/
+.venv/bin/ruff format src/ tasks/
+.venv/bin/ruff check --fix src/ tasks/
 ```
 
-### Check code with Ruff
+### Add Dependencies
 ```bash
-.venv/bin/ruff check <file.py>
+uv add package_name
+uv add --dev package_name
 ```
 
-### Fix issues automatically
+### Run Tasks
 ```bash
-.venv/bin/ruff check --fix <file.py>
-```
-
-### Add new dependencies
-```bash
-uv add package_name           # Add production dependency
-uv add --dev package_name     # Add development dependency
-```
-
-### Update lock file
-```bash
-uv lock
+uv run python tasks/1_people.py
 ```
 
 ## Key Technologies
 
 ### DSPy
-DSPy is a framework for composing language model prompts and building AI applications. It provides:
-- **Signatures**: Define input/output structure for tasks
-- **Modules**: Reusable components that use language models
-- **Prompt Optimization**: Tools for improving and fine-tuning prompts
+Framework for composing LLM prompts:
+- **Signatures**: Define input/output structure
+- **Modules**: Reusable LLM components
+- **Prompt Optimization**: Fine-tuning tools
 
-### uv Package Manager
-- Fast, reliable Python package and project manager
-- Replaces pip, venv, and other tools
-- Deterministic builds via `uv.lock` file
-- Supports both production and development dependencies
+### pydantic-settings
+Settings management with validation:
+- Auto-loads from `.env`
+- Type coercion
+- Required field validation at startup
 
-## Environment Variables
-Create a `.env` file in the project root for API keys and configuration:
-```
-API_KEY=your_key_here
-```
+### uv
+Fast Python package manager:
+- Replaces pip, venv
+- Deterministic builds via `uv.lock`
 
-Never commit `.env` files to version control.
+## Documentation Search
+
+When you need to search docs, use `context7` tools.
