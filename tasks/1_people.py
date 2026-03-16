@@ -7,7 +7,7 @@ from pathlib import Path
 import dspy
 import httpx
 
-from ai_devs import Config, configure_logging, fetch_data, save_to_file, submit_answer
+from ai_devs import Config, configure_logging, ensure_data_file, submit_answer
 
 logger = logging.getLogger(__name__)
 
@@ -22,18 +22,6 @@ AVAILABLE_TAGS = [
     "praca z pojazdami",
     "praca fizyczna",
 ]
-
-
-def ensure_data_file(config: Config) -> None:
-    """Download data file if missing."""
-    if DATA_FILE.exists():
-        logger.info("Data file already exists")
-        return
-
-    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    data = fetch_data("people.csv", config)
-    save_to_file(data, DATA_FILE)
-    logger.info("Downloaded data file")
 
 
 def calculate_age(birth_date: str) -> int:
@@ -98,7 +86,7 @@ def main() -> None:
     config = Config()
 
     try:
-        ensure_data_file(config)
+        ensure_data_file("people.csv", DATA_FILE, config)
 
         lm = dspy.LM(
             model="mistral/mistral-large-latest", api_key=config.mistral_api_key

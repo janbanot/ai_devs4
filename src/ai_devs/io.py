@@ -15,3 +15,11 @@ def get_data(file_name: str, config: Config, save_path: str | None = None) -> No
     """Convenience: fetch and save data."""
     data = fetch_data(file_name, config)
     save_to_file(data, save_path or file_name)
+
+
+def ensure_data_file(file_name: str, path: Path, config: Config) -> None:
+    """Download data file if it doesn't exist locally."""
+    if path.exists():
+        return
+    data = fetch_data(file_name, config)
+    save_to_file(data, path)
