@@ -13,7 +13,7 @@ def save_to_file(data: bytes, path: str | Path) -> None:
 
 def get_data(file_name: str, config: Config, save_path: str | None = None) -> None:
     """Convenience: fetch and save data."""
-    data = fetch_data(file_name, config)
+    data = fetch_data(f"data/{config.hub_api_key}/{file_name}", config)
     save_to_file(data, save_path or file_name)
 
 
@@ -21,5 +21,5 @@ def ensure_data_file(file_name: str, path: Path, config: Config) -> None:
     """Download data file if it doesn't exist locally."""
     if path.exists():
         return
-    data = fetch_data(file_name, config)
+    data = fetch_data(f"data/{config.hub_api_key}/{file_name}", config)
     save_to_file(data, path)

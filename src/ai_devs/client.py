@@ -5,9 +5,9 @@ import httpx
 from ai_devs.config import Config
 
 
-def fetch_data(file_name: str, config: Config) -> bytes:
-    """Fetch data from hub, return raw bytes."""
-    url = f"{config.hub_base_url.rstrip('/')}/data/{config.hub_api_key}/{file_name}"
+def fetch_data(path: str, config: Config) -> bytes:
+    """Fetch from hub. `path` is appended to base URL."""
+    url = f"{config.hub_base_url.rstrip('/')}/{path}"
     response = httpx.get(url, timeout=config.http_timeout)
     response.raise_for_status()
     return response.content
